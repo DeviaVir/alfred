@@ -34,19 +34,17 @@ def index(request):
 
         actionable_host = {}
         for server in servers:
-            logger.error(server)
+            server = server.get('server', {})
             if server.get('public_ip', {}).get('address', '') == ip:
-                actionable_host = server
+                if server.get('state') == 'running' and \
+                        server.get('state_detail') == 'booted':
+                    actionable_host = server
                 break
 
         if actionable_host:
-            host_info = api.query().servers(actionable_host.get('id')).get()
-            logger.error(host_info)
-            if host_info.get('state') == 'running' and \
-                    host_info.get('state_detail') == 'booted':
-                api.query().servers(actionable_host.get('id')).action.post(
-                    {'action': 'reboot'})
-                resp = 'OK'
+            api.query().servers(actionable_host.get('id')).action.post(
+                {'action': 'reboot'})
+            resp = 'OK'
 
     if resp == 'NOK':
         logger.error('NOK')
