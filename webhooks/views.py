@@ -20,7 +20,7 @@ def index(request):
     ip = request.GET.get('ip')
     if request.method == 'POST':
         data = json.loads(request.body)
-        logger.error(data)
+        logger.info(data)
         if data.get('current_state') == 'DOWN' and \
                 'test' not in data.get('description', ''):
             hostname = data.get('check_params', {}).get('hostname')
@@ -34,11 +34,9 @@ def index(request):
 
         actionable_host = {}
         for server in servers:
-            logger.error(server)
             if server.get('public_ip', {}).get('address', '') == ip:
                 if server.get('state') == 'running' and \
                         server.get('state_detail') == 'booted':
-                    logger.error('passed')
                     actionable_host = server
                 break
 
