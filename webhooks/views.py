@@ -35,14 +35,16 @@ def index(request):
         actionable_host = {}
         for server in servers:
             server = server.get('server', {})
+            logger.error(server)
             if server.get('public_ip', {}).get('address', '') == ip:
                 if server.get('state') == 'running' and \
                         server.get('state_detail') == 'booted':
+                    logger.error('passed')
                     actionable_host = server
                 break
 
         if actionable_host:
-            api.query().servers(actionable_host.get('id')).action.post(
+            api.query().servers(actionable_host.get('id', '')).action.post(
                 {'action': 'reboot'})
             resp = 'OK'
 
