@@ -24,7 +24,7 @@ def index(request):
         logger.error(data)
         if data.get('current_state') == 'DOWN' and \
                 'test' not in data.get('description', ''):
-            hostname = request.body.get('check_params', {}).get('hostname')
+            hostname = data.get('check_params', {}).get('hostname')
             if hostname:
                 ip = socket.gethostbyname(hostname)
 
