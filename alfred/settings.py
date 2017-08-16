@@ -32,7 +32,7 @@ SW_REGION = os.getenv('SW_REGION', 'par1')
 # Get webhook secret
 WEBHOOK_SECRET = os.getenv('WEBHOOK_SECRET', 'dualdev-rules!')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['alfred.dualdev.io']
 
 
 # Application definition
