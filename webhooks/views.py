@@ -34,7 +34,7 @@ def index(request):
 
         actionable_host = {}
         for server in servers:
-            logger.error('%s == %s' % (server.public_ip.address, ip))
+            logger.error(server)
             if server.get('public_ip', {}).get('address', '') == ip:
                 actionable_host = server
                 break
