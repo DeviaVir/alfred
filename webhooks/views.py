@@ -20,6 +20,8 @@ def index(request):
     ip = request.GET.get('ip')
     if request.method == 'POST':
         logger.error(request.POST)
+        logger.error(request.GET)
+        logger.error(request.body)
         if request.POST.get('current_state') == 'DOWN':
             hostname = request.POST.get('check_params', {}).get('hostname')
             if hostname:
