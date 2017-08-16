@@ -1,8 +1,16 @@
 import socket
+import logging
+import json
 from django.http import HttpResponse
 from alfred.settings import SW_REGION, SW_TOKEN, WEBHOOK_SECRET
+from django.views.decorators.csrf import csrf_exempt
 
 
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
+
+
+@csrf_exempt
 def index(request):
     resp = 'NOK'
 
@@ -11,8 +19,11 @@ def index(request):
 
     ip = request.GET.get('ip')
     if request.method == 'POST':
-        if request.POST.get('current_state') == 'DOWN':
-            hostname = request.POST.get('check_params', {}).get('hostname')
+        data = json.loads(request.body)
+        logger.info(data)
+        if data.get('current_state') == 'DOWN' and \
+                'test' not in data.get('description', ''):
+            hostname = data.get('check_params', {}).get('hostname')
             if hostname:
                 ip = socket.gethostbyname(hostname)
 
@@ -24,12 +35,18 @@ def index(request):
         actionable_host = {}
         for server in servers:
             if server.get('public_ip', {}).get('address', '') == ip:
-                actionable_host = server
+                if server.get('state') == 'running' and \
+                        server.get('state_detail') == 'booted':
+                    actionable_host = server
                 break
 
         if actionable_host:
-            api.query().servers(actionable_host.get('id')).action.post(
+            api.query().servers(actionable_host.get('id', '')).action.post(
                 {'action': 'reboot'})
             resp = 'OK'
 
+    if resp == 'NOK':
+        logger.error('NOK')
+    else:
+        logger.error('OK')
     return HttpResponse(resp)
