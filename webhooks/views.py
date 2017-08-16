@@ -34,7 +34,6 @@ def index(request):
 
         actionable_host = {}
         for server in servers:
-            server = server.get('server', {})
             logger.error(server)
             if server.get('public_ip', {}).get('address', '') == ip:
                 if server.get('state') == 'running' and \
