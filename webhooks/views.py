@@ -1,5 +1,6 @@
 import socket
 import logging
+import json
 from django.http import HttpResponse
 from alfred.settings import SW_REGION, SW_TOKEN, WEBHOOK_SECRET
 from django.views.decorators.csrf import csrf_exempt
@@ -19,8 +20,10 @@ def index(request):
 
     ip = request.GET.get('ip')
     if request.method == 'POST':
-        if request.body.get('current_state') == 'DOWN' and \
-                'test' not in request.body.get('description', ''):
+        data = json.loads(request.body)
+        logger.error(data)
+        if data.get('current_state') == 'DOWN' and \
+                'test' not in data.get('description', ''):
             hostname = request.body.get('check_params', {}).get('hostname')
             if hostname:
                 ip = socket.gethostbyname(hostname)
