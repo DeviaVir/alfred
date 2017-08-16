@@ -34,12 +34,14 @@ def index(request):
 
         actionable_host = {}
         for server in servers:
+            logger.error('%s == %s' % (server.public_ip.address, ip))
             if server.get('public_ip', {}).get('address', '') == ip:
                 actionable_host = server
                 break
 
         if actionable_host:
             host_info = api.query().servers(actionable_host.get('id')).get()
+            logger.error(host_info)
             if host_info.get('state') == 'running' and \
                     host_info.get('state_detail') == 'booted':
                 api.query().servers(actionable_host.get('id')).action.post(
