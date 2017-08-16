@@ -13,15 +13,15 @@ logger = logging.getLogger(__name__)
 def index(request):
     resp = 'NOK'
 
-    logger.info(request.method)
-    logger.info(request.POST)
-
     if request.GET.get('secret') != WEBHOOK_SECRET:
         logger.error('NOK (secret)')
         return HttpResponse(resp)
 
     ip = request.GET.get('ip')
+    logger.error('request method: %s' % request.method)
     if request.method == 'POST':
+        logger.error('POST')
+        logger.error(request.POST.get('current_state'))
         if request.POST.get('current_state') == 'DOWN':
             hostname = request.POST.get('check_params', {}).get('hostname')
             if hostname:
@@ -46,5 +46,5 @@ def index(request):
     if resp == 'NOK':
         logger.error('NOK')
     else:
-        logger.info('OK')
+        logger.error('OK')
     return HttpResponse(resp)
