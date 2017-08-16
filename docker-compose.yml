@@ -1,0 +1,10 @@
+django:
+  build: ./
+  ports:
+    - 8000:80
+  volumes:
+    - .:/app
+  environment:
+    - DEBUG=False
+    - SW_TOKEN=
+  command: gunicorn -w 4 alfred.wsgi --bind 0.0.0.0:80
