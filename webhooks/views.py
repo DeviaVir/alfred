@@ -15,7 +15,6 @@ def index(request):
     resp = 'NOK'
 
     if request.GET.get('secret') != WEBHOOK_SECRET:
-        logger.error('NOK (secret)')
         return HttpResponse(resp)
 
     ip = request.GET.get('ip')
@@ -40,9 +39,12 @@ def index(request):
                 break
 
         if actionable_host:
-            api.query().servers(actionable_host.get('id')).action.post(
-                {'action': 'reboot'})
-            resp = 'OK'
+            host_info = api.query().servers(actionable_host.get('id')).get()
+            if host_info.get('state') == 'running' and \
+                    host_info.get('state_detail') == 'booted':
+                api.query().servers(actionable_host.get('id')).action.post(
+                    {'action': 'reboot'})
+                resp = 'OK'
 
     if resp == 'NOK':
         logger.error('NOK')
