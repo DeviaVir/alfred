@@ -1,10 +1,15 @@
 import socket
 from django.http import HttpResponse
 from alfred.settings import SW_REGION, SW_TOKEN, WEBHOOK_SECRET
+from django.views.decorators.csrf import csrf_exempt
 
 
+@csrf_exempt
 def index(request):
     resp = 'NOK'
+
+    print(request.method)
+    print(request.POST)
 
     if request.GET.get('secret') != WEBHOOK_SECRET:
         return HttpResponse(resp)
