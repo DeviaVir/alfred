@@ -1,17 +1,23 @@
 import socket
+import logging
 from django.http import HttpResponse
 from alfred.settings import SW_REGION, SW_TOKEN, WEBHOOK_SECRET
 from django.views.decorators.csrf import csrf_exempt
+
+
+# Get an instance of a logger
+logger = logging.getLogger(__name__)
 
 
 @csrf_exempt
 def index(request):
     resp = 'NOK'
 
-    print(request.method)
-    print(request.POST)
+    logger.info(request.method)
+    logger.info(request.POST)
 
     if request.GET.get('secret') != WEBHOOK_SECRET:
+        logger.error('NOK (secret)')
         return HttpResponse(resp)
 
     ip = request.GET.get('ip')
@@ -37,4 +43,8 @@ def index(request):
                 {'action': 'reboot'})
             resp = 'OK'
 
+    if resp == 'NOK':
+        logger.error('NOK')
+    else:
+        logger.info('OK')
     return HttpResponse(resp)
